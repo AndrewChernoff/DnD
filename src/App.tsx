@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
+import { useAppDispatch, useAppSelector } from './store/store';
+import { setBoards, setCurrentBoard, setCurrentItem } from './store/features/tablesSlice';
 
 type Item = {
   id: number;
@@ -13,16 +15,20 @@ type Board = {
 };
 
 function App() {
+
+  const boards = useAppSelector(store => store.tables.boards)
+  const currentBoard = useAppSelector(store => store.tables.currentBoard)
+  const currentItem = useAppSelector(store => store.tables.currentItem)
+  const dispatch = useAppDispatch()
   
-  const [boards, setBoards] = useState([
+  /* const [boards, setBoards] = useState([
     {id: 1, title: "do", items:[{id: 1, title: "go to a store"}, {id: 2, title: "buy milk"}, {id: 3, title: "eat"}]},
     {id: 2, title: "check", items:[{id: 4, title: "code review"}, {id: 5, title: "tasks"}, {id: 6, title: "codewars"}]},
-    {id: 3, title: "done", items:[{id: 7, title: "saga"}, {id: 8, title: "node js"}, {id: 9, title: "work"}]},
-  ])
+  ]) */
 
   
-  const [currentBoard, setCurrentBoard] = useState<any>(null)
-  const [currentItem, setCurrentItem] = useState<any>(null)
+  /* const [currentBoard, setCurrentBoard] = useState<Board | null>(null)
+  const [currentItem, setCurrentItem] = useState<Item | null>(null) */
 
 
 
@@ -42,8 +48,8 @@ function App() {
 
   function dragStartHandler(e: React.DragEvent<HTMLDivElement>, board: Board, item: Item): void {
     console.log('start');
-    setCurrentBoard(board)
-    setCurrentItem(item)
+    dispatch(setCurrentBoard(board))
+    dispatch(setCurrentItem(item))
   }
 
   function dragEndHandler(e: any): void {
@@ -53,15 +59,19 @@ function App() {
   }
 
   function dropHandler(e: React.DragEvent<HTMLDivElement>, board: Board, item: Item): void {
-    e.stopPropagation()
+    /* e.stopPropagation()
     console.log('drop');
+    if (!currentBoard || !currentItem) {
+      return;
+    }
     const currentIndex = currentBoard.items.indexOf(currentItem)
 
-    currentBoard.items.splice(currentIndex, 1)
+    ///currentBoard.items.splice(currentIndex, 1)
+    setCurrentBoard(currentBoard.items.splice(currentIndex, 1))
 
     const dropIndex = board.items.indexOf(item)
     board.items.splice(dropIndex + 1, 0, currentItem)
-    setBoards(boards.map(b => {
+    dispatch(setBoards(boards.map(b => {
       if(b.id === board.id) {
         return board
       }
@@ -69,16 +79,79 @@ function App() {
           return currentBoard
       }
       return b 
-    }))
+    }))) */
+
+    console.log('drop');
+  if (!currentBoard || !currentItem) {
+    return;
+  }
+
+  const currentIndex = currentBoard.items.indexOf(currentItem);
+  const updatedCurrentBoard = {
+    ...currentBoard,
+    items: [
+      ...currentBoard.items.slice(0, currentIndex),
+      ...currentBoard.items.slice(currentIndex + 1),
+    ],
+  };
+
+  const dropIndex = board.items.indexOf(item);
+  const updatedBoard = {
+    ...board,
+    items: [
+      ...board.items.slice(0, dropIndex + 1),
+      currentItem,
+      ...board.items.slice(dropIndex + 1),
+    ],
+  };
+
+  dispatch(setBoards(boards.map((b) => {
+    if (b.id === board.id) {
+      return updatedBoard;
+    }
+    if (b.id === updatedCurrentBoard.id) {
+      return updatedCurrentBoard;
+    }
+    return b;
+  })));
+
+  dispatch(setCurrentBoard(updatedCurrentBoard));
   }
 
   function dropCardHandler(e: any, board: Board) {
+    if (!currentBoard || !currentItem) {
+      return;
+    }
+  
+    const updatedBoardItems = [...board.items, currentItem];
+    const currentIndex = currentBoard.items.indexOf(currentItem);
+    const updatedCurrentBoardItems = [
+      ...currentBoard.items.slice(0, currentIndex),
+      ...currentBoard.items.slice(currentIndex + 1),
+    ];
+  
+    dispatch(
+      setBoards(
+        boards.map((b) => {
+          if (b.id === board.id) {
+            return { ...board, items: updatedBoardItems };
+          }
+          if (b.id === currentBoard.id) {
+            return { ...currentBoard, items: updatedCurrentBoardItems };
+          }
+          return b;
+        })
+      )
+    );
+    /* if (!currentBoard || !currentItem) {
+      return;
+    }
     board.items.push(currentItem)
     const currentIndex = currentBoard.items.indexOf(currentItem)
 
     currentBoard.items.splice(currentIndex, 1)
 
-    setBoards(boards.map(b => {
+    dispatch(setBoards(boards.map(b => {
       if(b.id === board.id) {
         return board
       }
@@ -86,7 +159,7 @@ function App() {
           return currentBoard
       }
       return b 
-    }))
+    }))) */
   }
 
   return (
