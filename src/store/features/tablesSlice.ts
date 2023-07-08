@@ -25,20 +25,20 @@ interface Item {
     boards: [
       {
         id: 1,
-        title: "do",
+        title: "Users",
         items: [
-          { id: 1, title: "go to a store" },
-          { id: 2, title: "buy milk" },
-          { id: 3, title: "eat" },
+          { id: 1, title: "Viktor" },
+          { id: 2, title: "Valera" },
+          { id: 3, title: "Sveta" },
         ],
       },
       {
         id: 2,
-        title: "check",
+        title: "Mentors",
         items: [
-          { id: 4, title: "code review" },
-          { id: 5, title: "tasks" },
-          { id: 6, title: "codewars" },
+          { id: 4, title: "Mark" },
+          { id: 5, title: "Elon" },
+          { id: 6, title: "Dimych" },
         ],
       },
     ],

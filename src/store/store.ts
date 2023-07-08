@@ -1,12 +1,45 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import tablesSlice from './features/tablesSlice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import storage from 'redux-persist/lib/storage'
+import {
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
+const persistConfig = {
+  key: 'root',
+  storage: storage,
+  blacklist: ['apiProductSlice'],
+}
 
-export const store = configureStore({
+export const rootReducers = combineReducers({
+  tables: tablesSlice,
+})
+
+const persistedReducer = persistReducer(persistConfig, rootReducers)
+
+
+/* export const store = configureStore({
   reducer: {
     tables: tablesSlice,
   },
+}) */
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    })
 })
+
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
