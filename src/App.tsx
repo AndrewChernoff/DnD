@@ -41,7 +41,6 @@ function App() {
   }
 
   function dragStartHandler(e: React.DragEvent<HTMLDivElement>, board: Board, item: Item): void {
-    console.log('start');
     setCurrentBoard(board)
     setCurrentItem(item)
   }
