@@ -106,6 +106,8 @@ export const listsSlice = createSlice({
           list.items.splice(droppableIdEnd, 0, ...card)
         }
       } */
+
+      ///in the same list
       if (droppableIdStart === droppableIdEnd) {
         const list = state.lists.find((list) => list.id === droppableIdStart);
     
@@ -114,7 +116,24 @@ export const listsSlice = createSlice({
           list.items.splice(droppableIndexEnd, 0, item);
         }
       }
-    
+
+      ///other list
+        if (droppableIdStart !== droppableIdEnd) {
+          ///find the list where drag happened
+          const listStart = state.lists.find(list => droppableIdStart === list.id)
+
+          if(listStart) {
+          //pull outt the card from this list
+          const card = listStart.items.splice(droppableIndexStart, 1)
+
+          //find the list where drag ended
+          const listEnd = state.lists.find(list => droppableIdEnd === list.id) 
+
+          ///put card in the new list
+          listEnd?.items.splice(droppableIndexEnd, 0, ...card)
+          }
+
+        }
     }
 
   },
