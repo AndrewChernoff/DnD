@@ -1,14 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { nanoid } from '@reduxjs/toolkit'
+
 
 export type Item = {
-  id: number;
+  id: string;
   title: string;
 }
 
 type List = {
-  id: number;
+  id: string;
   title: string;
   items: Item[];
 }
@@ -23,30 +25,30 @@ let listItemId = 4
 const initialState: InitialState = {
   lists: [
     {
-      id: 1,
+      id: nanoid(),
       title: "do",
       items: [
-        { id: 1, title: "go to a store" },
-        { id: 2, title: "buy milk" },
-        { id: 3, title: "eat" },
+        { id: nanoid(), title: "go to a store" },
+        { id: nanoid(), title: "buy milk" },
+        { id: nanoid(), title: "eat" },
       ],
     },
     {
-      id: 2,
+      id: nanoid(),
       title: "check",
       items: [
-        { id: 4, title: "code review" },
-        { id: 5, title: "tasks" },
-        { id: 6, title: "codewars" },
+        { id: nanoid(), title: "code review" },
+        { id: nanoid(), title: "tasks" },
+        { id: nanoid(), title: "codewars" },
       ],
     },
     {
-      id: 3,
+      id: nanoid(),
       title: "done",
       items: [
-        { id: 7, title: "saga" },
-        { id: 8, title: "node js" },
-        { id: 9, title: "work" },
+        { id: nanoid(), title: "saga" },
+        { id: nanoid(), title: "node js" },
+        { id: nanoid(), title: "work" },
       ],
     },
   ],
@@ -58,7 +60,7 @@ export const listsSlice = createSlice({
   reducers: {
     addList: (state, action: PayloadAction<{title: string}>) => {
       const newList = {
-        id: listId++, 
+        id: nanoid(), 
         title: action.payload.title,
         items: []
       }
@@ -77,19 +79,48 @@ export const listsSlice = createSlice({
       })
       
     }, */
-    addListItem: (state, action: PayloadAction<{title: string, listId: number}>) => {
+    addListItem: (state, action: PayloadAction<{title: string, listId: string}>) => {
       const { title, listId } = action.payload;
       const list = state.lists.find((l) => l.id === listId);
       if (list) {
-        const newItem = { id: listItemId++, title };
+        const newItem = { id: nanoid(), title };
         list.items.push(newItem);
       }
     },
+    sort: (state, action: PayloadAction<{droppableIdStart: string, droppableIdEnd: any/* string */, droppableIndexStart: number, droppableIndexEnd: number, draggableId: string}>) => {
+      
+      const {
+        droppableIdStart,
+        droppableIdEnd,
+        droppableIndexStart,
+        droppableIndexEnd,
+        draggableId,
+      } = action.payload;
+    
+
+      /* if(droppableIdStart === droppableIdEnd) {
+        const list = state.lists.find(list => droppableIdStart === list.id)
+        
+        if(list) {
+          const card = list.items.splice(droppableIndexStart, 1)
+          list.items.splice(droppableIdEnd, 0, ...card)
+        }
+      } */
+      if (droppableIdStart === droppableIdEnd) {
+        const list = state.lists.find((list) => list.id === droppableIdStart);
+    
+        if (list) {
+          const item = list.items.splice(droppableIndexStart, 1)[0];
+          list.items.splice(droppableIndexEnd, 0, item);
+        }
+      }
+    
+    }
 
   },
 })
 
-export const { addList, addListItem } = listsSlice.actions
+export const { addList, addListItem, sort } = listsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 //export const selectCount = (state: RootState) => state.counter.value

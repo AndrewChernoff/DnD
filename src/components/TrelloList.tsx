@@ -2,30 +2,42 @@ import { TrelloCard } from './TrelloCard';
 import { Item, addListItem } from '../store/slices/listsSlice';
 import { TrelloActionButton } from './TrelloActionButton';
 import { useAppDispatch } from '../hooks/redux_hooks';
+import { Droppable } from 'react-beautiful-dnd';
 
 export interface ITrelloListProps {
   title: string
-  id: number
+  id: string
   items: Item[]
 }
 
-export function TrelloList ({title, id, items}: ITrelloListProps) {
-
-  const dispatch = useAppDispatch()
+export function TrelloList({ title, id, items }: ITrelloListProps) {
+  const dispatch = useAppDispatch();
 
   const onAddListItemHandler = (title: string) => {
-    dispatch(addListItem({title, listId:id}))
-  }
+    dispatch(addListItem({ title, listId: id }));
+  };
 
   return (
-    <div style={style.container}>
-        <h2>{title}</h2>
-        {items.map(el => {
-          return <h3 key={el.id}><TrelloCard title={el.title} id={el.id}/></h3> 
-        })}
-        <TrelloActionButton list={false} onAddItem={onAddListItemHandler}/>
-      {/* <h3><TrelloCard title={'fsd'}/></h3> */}
-    </div>
+    <Droppable droppableId={id.toString()}>
+      {(provided, snapshot) => (
+        <div
+          style={{ ...style.container, backgroundColor: snapshot.isDraggingOver ? 'skyblue' : '#ccc' }}
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+        >
+          <h2>{title}</h2>
+          {items.map((el, index) => {
+            return (
+              <h3 key={el.id}>
+                <TrelloCard title={el.title} index={index} id={el.id} />
+              </h3>
+            );
+          })}
+          <TrelloActionButton /*listId={listId} */ list={false} onAddItem={onAddListItemHandler} />
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
   );
 }
 

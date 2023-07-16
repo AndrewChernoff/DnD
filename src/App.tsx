@@ -3,7 +3,8 @@ import './App.css';
 import { TrelloList } from './components/TrelloList';
 import { useAppDispatch, useAppSelector } from './hooks/redux_hooks';
 import { TrelloActionButton } from './components/TrelloActionButton';
-import { addList } from './store/slices/listsSlice';
+import { addList, sort } from './store/slices/listsSlice';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 
 type Item = {
   id: number;
@@ -33,7 +34,22 @@ function App() {
     }
   }
 
+  const onDragEnd = (result: DropResult) => {
+    const {destination, source, draggableId} = result
+  
+    if(!destination) {
+      return
+    }
+
+    dispatch(sort({droppableIdStart: source.droppableId,
+      droppableIdEnd: destination.droppableId,
+      droppableIndexStart: source.index,
+      droppableIndexEnd: destination.index,
+       draggableId: draggableId}))
+  }
+
   return (
+    <DragDropContext onDragEnd={onDragEnd}>
     <div style={style.container} className="app">
       {lists.map(el => {
        return <TrelloList key={el.id} title={el.title} id={el.id} items={el.items}/>  
@@ -41,6 +57,7 @@ function App() {
       
       <TrelloActionButton list={true} onAddList={onAddListHandler}/>
     </div>
+    </DragDropContext>
   );
 }
 
