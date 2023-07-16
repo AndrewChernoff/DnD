@@ -87,7 +87,7 @@ export const listsSlice = createSlice({
         list.items.push(newItem);
       }
     },
-    sort: (state, action: PayloadAction<{droppableIdStart: string, droppableIdEnd: any/* string */, droppableIndexStart: number, droppableIndexEnd: number, draggableId: string}>) => {
+    sort: (state, action: PayloadAction<{droppableIdStart: string, droppableIdEnd: any/* string */, droppableIndexStart: number, droppableIndexEnd: number, draggableId: string, type: any}>) => {
       
       const {
         droppableIdStart,
@@ -95,17 +95,14 @@ export const listsSlice = createSlice({
         droppableIndexStart,
         droppableIndexEnd,
         draggableId,
+        type
       } = action.payload;
     
 
-      /* if(droppableIdStart === droppableIdEnd) {
-        const list = state.lists.find(list => droppableIdStart === list.id)
-        
-        if(list) {
-          const card = list.items.splice(droppableIndexStart, 1)
-          list.items.splice(droppableIdEnd, 0, ...card)
-        }
-      } */
+      if(type === 'list') {
+        const list = state.lists.splice(droppableIndexStart, 1)
+        state.lists.splice(droppableIndexEnd, 0, ...list)
+      }
 
       ///in the same list
       if (droppableIdStart === droppableIdEnd) {

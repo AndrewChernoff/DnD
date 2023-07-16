@@ -16,19 +16,19 @@ export function TrelloActionButton ({list, onAddList, onAddItem}: TrelloActionBu
     const [isFormOpen, setIsFormOpen] = useState(false)
 
     const onAddListHandler = (newTitle: string) => {
-        if(title.trim().length === 0) {
-            return
+        if(title.trim().length > 0) {
+            onAddList && onAddList(newTitle)
+            setTitle('')
+            setIsFormOpen(false)
         }   
-        onAddList && onAddList(newTitle)
-        setTitle('')
     }
 
     const onAddItemHandler = (newTitle: string) => {
-        if(title.trim().length === 0) {
-            return
+        if(title.trim().length > 0) {
+            onAddItem && onAddItem(newTitle)
+            setTitle('')
+            setIsFormOpen(false)
         }   
-        onAddItem && onAddItem(newTitle)
-        setTitle('')
     }
 
     const buttonText = list ? "Add another list" : "Add another card"
@@ -76,8 +76,8 @@ export function TrelloActionButton ({list, onAddList, onAddItem}: TrelloActionBu
           : <div /* onBlur={formHandler} */>
             <Card
             style={{
-                minHeight: 85,
-                minWidth: 272,
+                minHeight: 35,
+                minWidth: 282,
                 padding: "6px 8px 2px"
             }}>
                 <TextareaAutosize 
@@ -87,8 +87,8 @@ export function TrelloActionButton ({list, onAddList, onAddItem}: TrelloActionBu
                     overflow: 'hidden',
                     outline: 'none',
                     border: 'none'
-
                 }}
+                maxRows={3}
                 onChange={textareaTitleHandler} placeholder={placeholder}/>
             </Card>
             <div style={styles.formButtonGroup}>
