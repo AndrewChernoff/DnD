@@ -1,18 +1,35 @@
 import { Button, TextareaAutosize } from "@mui/material";
 import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 interface TrelloActionButtonProps {
     list: any
+    onAddList?: (title: string) => void
+    onAddItem?: (title: string) => void
 }
 
 
-
-export function TrelloActionButton ({list}: TrelloActionButtonProps) {
+export function TrelloActionButton ({list, onAddList, onAddItem}: TrelloActionButtonProps) {
 
     const [title, setTitle] = useState('')
     const [isFormOpen, setIsFormOpen] = useState(false)
+
+    const onAddListHandler = (newTitle: string) => {
+        if(title.trim().length === 0) {
+            return
+        }   
+        onAddList && onAddList(newTitle)
+        setTitle('')
+    }
+
+    const onAddItemHandler = (newTitle: string) => {
+        if(title.trim().length === 0) {
+            return
+        }   
+        onAddItem && onAddItem(newTitle)
+        setTitle('')
+    }
 
     const buttonText = list ? "Add another list" : "Add another card"
     const buttonOpacity = list ? 1 : 0.5
@@ -56,7 +73,7 @@ export function TrelloActionButton ({list}: TrelloActionButtonProps) {
             <Icon>+</Icon>
             <p>{buttonText}</p>
           </div>
-          : <div onBlur={formHandler}>
+          : <div /* onBlur={formHandler} */>
             <Card
             style={{
                 minHeight: 85,
@@ -78,10 +95,14 @@ export function TrelloActionButton ({list}: TrelloActionButtonProps) {
             <Button variant="contained" style={{
                 color: "white",
                 backgroundColor: "#5aac44"
-            }}>
+            }}
+                onClick={() => list ? onAddListHandler(title) : onAddItemHandler(title)}
+            >
                 {buttonTitle} {" "}
             </Button>
-            <Icon style={{marginLeft: 8, cursor: 'pointer'}}>X</Icon>
+            <Icon style={{marginLeft: 8, cursor: 'pointer'}}
+            onClick={formHandler}
+            >X</Icon>
           </div>
         </div>
         }

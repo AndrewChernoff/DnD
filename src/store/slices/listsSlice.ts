@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
-// Define a type for the slice state
 export type Item = {
   id: number;
   title: string;
@@ -18,7 +17,9 @@ type InitialState = {
   lists: List[];
 }
 
-// Define the initial state using that type
+let listId = 4
+let listItemId = 4
+
 const initialState: InitialState = {
   lists: [
     {
@@ -53,23 +54,42 @@ const initialState: InitialState = {
 
 export const listsSlice = createSlice({
   name: 'list',
-  // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    increment: (state) => {
+    addList: (state, action: PayloadAction<{title: string}>) => {
+      const newList = {
+        id: listId++, 
+        title: action.payload.title,
+        items: []
+      }
+      state.lists.push(newList)
+    },
+    /* addListItem: (state, action: PayloadAction<{title: string, listId: number}>) => {
+      console.log(action.payload.title);
+      return state.lists.map(el => {
+        if (el.id === listId) {
+          let newItem = {
+            id: 10000,
+            title: action.payload.title
+          }
+          el.items.push(newItem)
+        }
+      })
       
+    }, */
+    addListItem: (state, action: PayloadAction<{title: string, listId: number}>) => {
+      const { title, listId } = action.payload;
+      const list = state.lists.find((l) => l.id === listId);
+      if (list) {
+        const newItem = { id: listItemId++, title };
+        list.items.push(newItem);
+      }
     },
-    decrement: (state) => {
-      
-    },
-    // Use the PayloadAction type to declare the contents of `action.payload`
-    incrementByAmount: (state, action: PayloadAction<number>) => {
-       
-    },
+
   },
 })
 
-export const { increment, decrement, incrementByAmount } = listsSlice.actions
+export const { addList, addListItem } = listsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 //export const selectCount = (state: RootState) => state.counter.value

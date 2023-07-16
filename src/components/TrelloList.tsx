@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { TrelloCard } from './TrelloCard';
-import { Item } from '../store/slices/listsSlice';
+import { Item, addListItem } from '../store/slices/listsSlice';
 import { TrelloActionButton } from './TrelloActionButton';
+import { useAppDispatch } from '../hooks/redux_hooks';
 
 export interface ITrelloListProps {
   title: string
@@ -10,13 +10,20 @@ export interface ITrelloListProps {
 }
 
 export function TrelloList ({title, id, items}: ITrelloListProps) {
+
+  const dispatch = useAppDispatch()
+
+  const onAddListItemHandler = (title: string) => {
+    dispatch(addListItem({title, listId:id}))
+  }
+
   return (
     <div style={style.container}>
         <h2>{title}</h2>
         {items.map(el => {
-          return <h3><TrelloCard title={el.title} id={el.id}/></h3> 
+          return <h3 key={el.id}><TrelloCard title={el.title} id={el.id}/></h3> 
         })}
-        <TrelloActionButton list={false}/>
+        <TrelloActionButton list={false} onAddItem={onAddListItemHandler}/>
       {/* <h3><TrelloCard title={'fsd'}/></h3> */}
     </div>
   );
